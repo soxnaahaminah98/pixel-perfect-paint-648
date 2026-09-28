@@ -1,12 +1,12 @@
-import { Link, type LinkProps } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { useState, type ReactNode } from "react";
 import { Menu, X } from "lucide-react";
 
-const navItems: { to: LinkProps["to"]; label: string }[] = [
+const navItems = [
   { to: "/", label: "Accueil" },
   { to: "/inventaire", label: "Inventaire" },
   { to: "/contact", label: "Contact" },
-];
+] as const;
 
 export function SiteLayout({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
