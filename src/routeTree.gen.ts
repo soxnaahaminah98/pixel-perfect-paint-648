@@ -11,7 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ContactRouteImport } from './routes/contact'
-import { Route as InventaireRouteImport } from './routes/inventaire'
+import { Route as SuiviRouteImport } from './routes/suivi'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -23,40 +23,40 @@ const ContactRoute = ContactRouteImport.update({
   path: '/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
-const InventaireRoute = InventaireRouteImport.update({
-  id: '/inventaire',
-  path: '/inventaire',
+const SuiviRoute = SuiviRouteImport.update({
+  id: '/suivi',
+  path: '/suivi',
   getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/contact': typeof ContactRoute
-  '/inventaire': typeof InventaireRoute
+  '/suivi': typeof SuiviRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/contact': typeof ContactRoute
-  '/inventaire': typeof InventaireRoute
+  '/suivi': typeof SuiviRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/contact': typeof ContactRoute
-  '/inventaire': typeof InventaireRoute
+  '/suivi': typeof SuiviRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/contact' | '/inventaire'
+  fullPaths: '/' | '/contact' | '/suivi'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/contact' | '/inventaire'
-  id: '__root__' | '/' | '/contact' | '/inventaire'
+  to: '/' | '/contact' | '/suivi'
+  id: '__root__' | '/' | '/contact' | '/suivi'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ContactRoute: typeof ContactRoute
-  InventaireRoute: typeof InventaireRoute
+  SuiviRoute: typeof SuiviRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -75,11 +75,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ContactRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/inventaire': {
-      id: '/inventaire'
-      path: '/inventaire'
-      fullPath: '/inventaire'
-      preLoaderRoute: typeof InventaireRouteImport
+    '/suivi': {
+      id: '/suivi'
+      path: '/suivi'
+      fullPath: '/suivi'
+      preLoaderRoute: typeof SuiviRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -88,7 +88,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ContactRoute: ContactRoute,
-  InventaireRoute: InventaireRoute,
+  SuiviRoute: SuiviRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

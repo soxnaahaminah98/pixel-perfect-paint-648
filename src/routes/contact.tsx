@@ -3,6 +3,7 @@ import { useState } from "react";
 import { z } from "zod";
 import { Mail, MapPin, Phone } from "lucide-react";
 import { SiteLayout } from "@/components/SiteLayout";
+import { equipementsInitiaux } from "@/data/equipements";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -34,11 +35,12 @@ const schema = z.object({
     .min(6, "Numéro trop court")
     .max(20, "Numéro trop long")
     .regex(/^[0-9+\s().-]+$/, "Numéro invalide"),
+  equipement: z.string().max(10),
   message: z.string().trim().min(1, "Le message est requis").max(1000, "1000 caractères maximum"),
 });
 
 type Champs = z.infer<typeof schema>;
-const vide: Champs = { nom: "", email: "", telephone: "", message: "" };
+const vide: Champs = { nom: "", email: "", telephone: "", equipement: "", message: "" };
 
 function Contact() {
   const [valeurs, setValeurs] = useState<Champs>(vide);
@@ -47,7 +49,7 @@ function Contact() {
 
   const champ = (k: keyof Champs) => ({
     value: valeurs[k],
-    onChange: (ev: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    onChange: (ev: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
       setValeurs((v) => ({ ...v, [k]: ev.target.value }));
       setEnvoye(false);
     },
@@ -122,6 +124,19 @@ function Contact() {
                 )}
               </div>
               <div>
+                <label htmlFor="equipement" className="text-sm font-medium text-foreground">
+                  Équipement concerné
+                </label>
+                <select id="equipement" className={inputClass} {...champ("equipement")}>
+                  <option value="">— Aucun / autre demande —</option>
+                  {equipementsInitiaux.map((e) => (
+                    <option key={e.id} value={e.id}>
+                      {e.id} · {e.type} {e.modele} ({e.serie})
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
                 <label htmlFor="message" className="text-sm font-medium text-foreground">
                   Message
                 </label>
@@ -157,7 +172,7 @@ function Contact() {
               <h2 className="font-semibold text-primary">Adresse</h2>
               <p className="mt-3 flex items-start gap-2 text-muted-foreground">
                 <MapPin className="mt-0.5 size-4 shrink-0 text-accent" />
-                Plan International Sénégal, Bureau national, Dakar, Sénégal
+                Plan International Sénégal, Dakar, Sénégal
               </p>
               <p className="mt-3 flex items-start gap-2 text-muted-foreground">
                 <Mail className="mt-0.5 size-4 shrink-0 text-accent" />

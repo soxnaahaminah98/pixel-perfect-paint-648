@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Monitor, ShieldCheck, Clock, Users } from "lucide-react";
+import { Monitor, ShieldCheck, Clock, Users, Radio } from "lucide-react";
 import { SiteLayout } from "@/components/SiteLayout";
+import { compter, useEquipements } from "@/lib/parc-store";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -39,6 +40,12 @@ const stats = [
 ];
 
 function Accueil() {
+  const c = compter(useEquipements());
+  const live = [
+    { label: "En service", value: c.service, cls: "text-success", dot: "bg-success" },
+    { label: "En panne", value: c.panne, cls: "text-destructive", dot: "bg-destructive" },
+    { label: "En maintenance", value: c.maintenance, cls: "text-warning", dot: "bg-warning" },
+  ];
   return (
     <SiteLayout>
       <section className="bg-gradient-hero px-4 py-16 text-primary-foreground md:px-6 md:py-24">
@@ -50,22 +57,42 @@ function Accueil() {
             Votre parc informatique, sous contrôle en un clic
           </h1>
           <p className="mx-auto mt-5 max-w-2xl text-base text-primary-foreground/85 md:text-lg">
-            Suivez l'état, l'affectation et la maintenance de chaque équipement, du siège de Dakar au
-            bureau de Kaolack.
+            Consultez en temps réel l'état de vos équipements informatiques, du siège de Dakar au
+            bureau de Kaolack
           </p>
           <div className="mt-9 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center">
             <Link
-              to="/inventaire"
+              to="/suivi"
+              search={{ vue: "utilisateur" }}
               className="inline-flex items-center justify-center rounded-lg bg-accent px-6 py-3 text-sm font-semibold text-accent-foreground shadow-elegant transition-transform hover:-translate-y-0.5"
             >
-              Voir l'inventaire
+              Je suis utilisateur
             </Link>
             <Link
-              to="/contact"
+              to="/suivi"
+              search={{ vue: "technicien" }}
               className="inline-flex items-center justify-center rounded-lg border border-primary-foreground/40 px-6 py-3 text-sm font-semibold transition-colors hover:bg-primary-foreground/10"
             >
-              Signaler une panne
+              Je suis technicien IT
             </Link>
+          </div>
+        </div>
+      </section>
+
+      <section className="px-4 pt-10 md:px-6">
+        <div className="mx-auto max-w-6xl rounded-2xl border border-border bg-card p-5 shadow-card">
+          <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-primary">
+            <Radio className="size-4 animate-pulse text-success" /> En direct
+          </p>
+          <div className="mt-4 grid grid-cols-3 gap-3 text-center">
+            {live.map((l) => (
+              <div key={l.label} className="rounded-xl bg-secondary/50 p-4">
+                <p className={"text-3xl font-bold " + l.cls}>{l.value}</p>
+                <p className="mt-1 flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
+                  <span className={"size-2 rounded-full " + l.dot} /> {l.label}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -84,6 +111,7 @@ function Accueil() {
           ))}
         </div>
       </section>
+
     </SiteLayout>
   );
 }
