@@ -155,3 +155,15 @@
     color: var(--color-foreground);
   }
 }
+
+@utility bg-gradient-hero {
+  background-image: var(--gradient-hero);
+}
+
+@utility shadow-card {
+  box-shadow: var(--shadow-card);
+}
+
+@utility shadow-elegant {
+  box-shadow: var(--shadow-elegant);
+}
