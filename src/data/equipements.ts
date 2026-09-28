@@ -21,7 +21,7 @@ export type Equipement = {
   acquisition: string;
   maintenance?: string;
   os?: string;
-  observations?: string;
+  observations?: string | undefined;
 };
 
 export const utilisateurs: Utilisateur[] = [
