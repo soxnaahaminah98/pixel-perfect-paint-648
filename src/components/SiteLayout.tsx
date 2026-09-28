@@ -4,7 +4,7 @@ import { Menu, X } from "lucide-react";
 
 const navItems = [
   { to: "/", label: "Accueil" },
-  { to: "/inventaire", label: "Inventaire" },
+  { to: "/suivi", label: "Suivi des équipements" },
   { to: "/contact", label: "Contact" },
 ] as const;
 
@@ -17,7 +17,7 @@ export function SiteLayout({ children }: { children: ReactNode }) {
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 md:px-6">
           <Link to="/" className="flex items-center gap-2" onClick={() => setOpen(false)}>
             <span className="text-2xl" aria-hidden>
-              💻
+              🛠️
             </span>
             <span className="text-lg font-bold tracking-tight text-primary">ParcIT</span>
           </Link>
@@ -67,7 +67,7 @@ export function SiteLayout({ children }: { children: ReactNode }) {
       <footer className="border-t border-border/60 bg-secondary/50">
         <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-10 text-sm text-muted-foreground md:flex-row md:items-center md:justify-between md:px-6">
           <div>
-            <p className="font-semibold text-primary">💻 ParcIT — Plan International Sénégal</p>
+            <p className="font-semibold text-primary">🛠️ ParcIT — Plan International Sénégal</p>
             <p className="mt-1">Mentions légales · Usage interne · © {new Date().getFullYear()} ParcIT</p>
           </div>
           <div className="md:text-right">

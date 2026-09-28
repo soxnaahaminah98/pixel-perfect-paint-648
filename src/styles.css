@@ -22,6 +22,8 @@
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --color-success: var(--success);
   --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
   --color-primary-glow: var(--primary-glow);
 
   --radius-sm: calc(var(--radius) - 4px);
@@ -86,6 +88,8 @@
   --accent-foreground: oklch(0.22 0.05 60);
   --success: oklch(0.6 0.15 150);
   --success-foreground: oklch(1 0 0);
+  --warning: oklch(0.7 0.17 55);
+  --warning-foreground: oklch(1 0 0);
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(1 0 0);
   --border: oklch(0.915 0.015 255);
