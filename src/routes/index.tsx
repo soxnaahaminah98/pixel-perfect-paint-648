@@ -1,24 +1,89 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { Monitor, ShieldCheck, Clock, Users } from "lucide-react";
+import { SiteLayout } from "@/components/SiteLayout";
 
-// No head() here: the home route inherits title/description/og/twitter from
-// __root.tsx, and ships no og:image so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
 export const Route = createFileRoute("/")({
-  component: Index,
+  head: () => ({
+    meta: [
+      { title: "ParcIT — Votre parc informatique, sous contrôle" },
+      {
+        name: "description",
+        content:
+          "ParcIT centralise l'inventaire, l'affectation et la maintenance des équipements informatiques de Plan International Sénégal.",
+      },
+      { property: "og:title", content: "ParcIT — Votre parc informatique, sous contrôle" },
+      {
+        property: "og:description",
+        content:
+          "Suivez l'état, l'affectation et la maintenance de chaque équipement, du siège de Dakar au bureau de Kaolack.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
+  component: Accueil,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
-function Index() {
+const stats = [
+  {
+    icon: Users,
+    value: "150+",
+    label: "utilisateurs équipés sur les sites de Dakar et des régions",
+  },
+  { icon: Clock, value: "48 h", label: "de délai moyen de remise en service" },
+  {
+    icon: ShieldCheck,
+    value: "100 %",
+    label: "des équipements avec numéro de série et date de maintenance tracés",
+  },
+];
+
+function Accueil() {
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
-    </div>
+    <SiteLayout>
+      <section className="bg-gradient-hero px-4 py-16 text-primary-foreground md:px-6 md:py-24">
+        <div className="mx-auto max-w-4xl text-center">
+          <span className="inline-flex items-center gap-2 rounded-full bg-primary-foreground/15 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest">
+            <Monitor className="size-4" /> Plan International Sénégal · Service IT
+          </span>
+          <h1 className="mt-6 text-3xl font-bold leading-tight tracking-tight md:text-5xl">
+            Votre parc informatique, sous contrôle en un clic
+          </h1>
+          <p className="mx-auto mt-5 max-w-2xl text-base text-primary-foreground/85 md:text-lg">
+            Suivez l'état, l'affectation et la maintenance de chaque équipement, du siège de Dakar au
+            bureau de Kaolack.
+          </p>
+          <div className="mt-9 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center">
+            <Link
+              to="/inventaire"
+              className="inline-flex items-center justify-center rounded-lg bg-accent px-6 py-3 text-sm font-semibold text-accent-foreground shadow-elegant transition-transform hover:-translate-y-0.5"
+            >
+              Voir l'inventaire
+            </Link>
+            <Link
+              to="/contact"
+              className="inline-flex items-center justify-center rounded-lg border border-primary-foreground/40 px-6 py-3 text-sm font-semibold transition-colors hover:bg-primary-foreground/10"
+            >
+              Signaler une panne
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <section className="px-4 py-14 md:px-6 md:py-20">
+        <div className="mx-auto grid max-w-6xl gap-5 md:grid-cols-3">
+          {stats.map((s) => (
+            <div
+              key={s.value}
+              className="rounded-2xl border border-border bg-card p-7 text-center shadow-card"
+            >
+              <s.icon className="mx-auto size-7 text-accent" />
+              <p className="mt-4 text-4xl font-bold text-primary">{s.value}</p>
+              <p className="mt-2 text-sm text-muted-foreground">{s.label}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+    </SiteLayout>
   );
 }
