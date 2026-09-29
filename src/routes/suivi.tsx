@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { z } from "zod";
 import { AlertTriangle, MapPin, Radio, User, Wrench } from "lucide-react";
+import { AssistantIT } from "@/components/AssistantIT";
 import { SiteLayout } from "@/components/SiteLayout";
 import { StatutBadge } from "@/components/StatutBadge";
 import {
@@ -143,6 +144,8 @@ function Suivi() {
               <p className="text-sm text-muted-foreground">Aucun équipement pour ces critères.</p>
             )}
           </div>
+
+          <AssistantIT />
         </div>
       </section>
     </SiteLayout>
