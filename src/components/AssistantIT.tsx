@@ -16,6 +16,13 @@ function extraireTexte(outputs: unknown): string {
   return String(outputs);
 }
 
+function rendreGras(texte: string): React.ReactNode[] {
+  const parties = texte.split(/\*\*(.+?)\*\*/g);
+  return parties.map((partie, i) =>
+    i % 2 === 1 ? <strong key={i}>{partie}</strong> : partie
+  );
+}
+
 const EXEMPLES = [
   "Où en est le laptop HP ProBook 450 de Kaolack ?",
   "Le PC fixe Dell OptiPlex 7010 est en panne, quelle priorité ?",
