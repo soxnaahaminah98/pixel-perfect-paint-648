@@ -9,8 +9,8 @@ function extraireTexte(outputs: unknown): string {
   if (typeof outputs === "string") return outputs || "Réponse vide";
   if (typeof outputs === "object") {
     const o = outputs as Record<string, unknown>;
-    if (typeof o.text === "string" && o.text) return o.text;
-    if (typeof o.message_erreur === "string" && o.message_erreur) return o.message_erreur;
+    if (typeof o["text"] === "string" && o["text"]) return o["text"];
+    if (typeof o["message_erreur"] === "string" && o["message_erreur"]) return o["message_erreur"];
     return "Réponse vide";
   }
   return String(outputs);
