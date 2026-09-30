@@ -83,7 +83,7 @@ export function ilYa(ts: number, now: number) {
 }
 
 export const maintenanceEnRetard = (date: string | undefined, now: number) =>
-  !date || (now - new Date(date).getTime()) / 86400000 > 90;
+  !date || (now - new Date(date).getTime()) / 86400000 > 180;
 
 export function compter(list: Equipement[]) {
   return {

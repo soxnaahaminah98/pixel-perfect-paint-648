@@ -177,7 +177,7 @@ function Carte({ e, now, technicien }: { e: EquipementLive; now: number; technic
       {retard && (
         <p className="mt-4 flex items-center gap-2 rounded-lg bg-warning/15 px-3 py-2 text-xs font-medium text-warning">
           <AlertTriangle className="size-4 shrink-0" />
-          {e.maintenance ? "Dernière maintenance il y a plus de 90 jours" : "Aucune maintenance enregistrée"}
+          {e.maintenance ? "Dernière maintenance il y a plus de 180 jours" : "Aucune maintenance enregistrée"}
         </p>
       )}
 

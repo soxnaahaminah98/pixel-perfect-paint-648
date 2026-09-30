@@ -38,6 +38,8 @@ export const equipementsInitiaux: Equipement[] = [
   { id: "EQ004", type: "Imprimante", modele: "Bixolon SRP-330II", serie: "SN-BX33021", utilisateurId: "U003", site: "Kaolack", statut: "En service", acquisition: "2024-07-01", maintenance: "2026-07-01" },
   { id: "EQ005", type: "Laptop", modele: "HP ProBook 450", serie: "SN-HP45033", utilisateurId: "U003", site: "Kaolack", statut: "En maintenance", acquisition: "2023-09-10", maintenance: "2026-09-20", os: "Windows 11", observations: "Batterie à remplacer" },
   { id: "EQ006", type: "Smartphone", modele: "Samsung Galaxy A54", serie: "SN-SGA5401", utilisateurId: "U001", site: "Dakar - Siège", statut: "En service", acquisition: "2025-02-14", os: "Android 14" },
+  { id: "EQ007", type: "Laptop", modele: "HP ProBook 450", serie: "SN-HP45077", utilisateurId: "U002", site: "Dakar - Siège", statut: "En service", acquisition: "2025-01-15", maintenance: "2026-02-10", os: "Windows 11" },
+  { id: "EQ008", type: "Imprimante", modele: "HP LaserJet Pro M404", serie: "SN-HPLJ108", utilisateurId: "U003", site: "Kaolack", statut: "En service", acquisition: "2024-05-20", maintenance: "2026-03-05", observations: "Bac papier à remplacer" },
 ];
 
 export const nomComplet = (u?: Utilisateur) => (u ? `${u.prenom} ${u.nom}` : "—");
