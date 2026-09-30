@@ -5,16 +5,23 @@ const DIFY_URL = "https://api.dify.ai/v1/workflows/run";
 const DIFY_KEY = "app-90r0ygyQ2b7UDKQCNM3B753P";
 
 function extraireTexte(outputs: unknown): string {
-  if (outputs == null) return "Aucune réponse reçue.";
-  if (typeof outputs === "string") return outputs;
+  if (outputs == null) return "Réponse vide";
+  if (typeof outputs === "string") return outputs || "Réponse vide";
   if (typeof outputs === "object") {
-    const valeurs = Object.values(outputs as Record<string, unknown>);
-    const premiere = valeurs[0];
-    if (typeof premiere === "string") return premiere;
-    return JSON.stringify(premiere ?? outputs, null, 2);
+    const o = outputs as Record<string, unknown>;
+    if (typeof o.text === "string" && o.text) return o.text;
+    if (typeof o.message_erreur === "string" && o.message_erreur) return o.message_erreur;
+    return "Réponse vide";
   }
   return String(outputs);
 }
+
+const EXEMPLES = [
+  "Où en est le laptop HP ProBook 450 de Kaolack ?",
+  "Le PC fixe Dell OptiPlex 7010 est en panne, quelle priorité ?",
+  "Quelles imprimantes ont une maintenance en retard ?",
+  "Le smartphone Samsung Galaxy A54 a-t-il déjà eu une maintenance ?",
+];
 
 export function AssistantIT() {
   const [question, setQuestion] = useState("");
@@ -32,7 +39,7 @@ export function AssistantIT() {
     setReponse(null);
 
     const controleur = new AbortController();
-    const minuteur = setTimeout(() => controleur.abort(), 10000);
+    const minuteur = setTimeout(() => controleur.abort(), 30000);
 
     try {
       const res = await fetch(DIFY_URL, {
@@ -93,6 +100,19 @@ export function AssistantIT() {
           Interroger l'assistant IT
         </button>
       </form>
+
+      <div className="mt-3 flex flex-wrap gap-2">
+        {EXEMPLES.map((ex) => (
+          <button
+            key={ex}
+            type="button"
+            onClick={() => setQuestion(ex)}
+            className="rounded-full border border-border bg-muted px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:border-primary hover:text-primary"
+          >
+            {ex}
+          </button>
+        ))}
+      </div>
 
       {chargement && (
         <div className="mt-4 flex items-center gap-3 rounded-lg bg-muted px-4 py-4 text-sm text-muted-foreground">
