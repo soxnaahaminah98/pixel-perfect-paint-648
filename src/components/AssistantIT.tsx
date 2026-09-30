@@ -139,7 +139,9 @@ export function AssistantIT() {
           <p className="text-xs font-semibold uppercase tracking-wider text-accent">
             Réponse de l'assistant
           </p>
-          <p className="mt-2 whitespace-pre-wrap text-sm text-foreground">{reponse}</p>
+          <div className="mt-2 whitespace-pre-wrap text-sm text-foreground">
+            {rendreGras(reponse)}
+          </div>
         </div>
       )}
     </section>
