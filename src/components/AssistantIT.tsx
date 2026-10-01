@@ -1,20 +1,8 @@
+import { creerTicket } from "@/lib/tickets-store";
 import { useState } from "react";
+import { interrogerAgent } from "@/lib/dify.functions";
 import { Bot, Loader2, Send } from "lucide-react";
 
-const DIFY_URL = "https://api.dify.ai/v1/workflows/run";
-const DIFY_KEY = "app-90r0ygyQ2b7UDKQCNM3B753P";
-
-function extraireTexte(outputs: unknown): string {
-  if (outputs == null) return "Réponse vide";
-  if (typeof outputs === "string") return outputs || "Réponse vide";
-  if (typeof outputs === "object") {
-    const o = outputs as Record<string, unknown>;
-    if (typeof o["text"] === "string" && o["text"]) return o["text"];
-    if (typeof o["message_erreur"] === "string" && o["message_erreur"]) return o["message_erreur"];
-    return "Réponse vide";
-  }
-  return String(outputs);
-}
 
 function rendreGras(texte: string): React.ReactNode[] {
   const parties = texte.split(/\*\*(.+?)\*\*/g);
@@ -30,8 +18,9 @@ const EXEMPLES = [
   "Le smartphone Samsung Galaxy A54 a-t-il déjà eu une maintenance ?",
 ];
 
-export function AssistantIT() {
-  const [question, setQuestion] = useState("");
+export function AssistantIT({ questionInitiale = "", equipementId = "" }: { questionInitiale?: string; equipementId?: string }) {
+  const [ticketCree, setTicketCree] = useState<string | null>(null);
+  const [question, setQuestion] = useState(questionInitiale);
   const [chargement, setChargement] = useState(false);
   const [reponse, setReponse] = useState<string | null>(null);
   const [erreur, setErreur] = useState<string | null>(null);
@@ -44,35 +33,15 @@ export function AssistantIT() {
     setChargement(true);
     setErreur(null);
     setReponse(null);
-
-    const controleur = new AbortController();
-    const minuteur = setTimeout(() => controleur.abort(), 30000);
+    setTicketCree(null);
 
     try {
-      const res = await fetch(DIFY_URL, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${DIFY_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          inputs: { query: q },
-          response_mode: "blocking",
-          user: "parcit-" + Date.now(),
-        }),
-        signal: controleur.signal,
-      });
-      if (!res.ok) throw new Error("http");
-      const data = await res.json();
-      setReponse(extraireTexte(data?.data?.outputs));
-    } catch (e) {
-      if (e instanceof DOMException && e.name === "AbortError") {
-        setErreur("La réponse prend trop de temps — réessayez");
-      } else {
-        setErreur("Service temporairement indisponible");
-      }
+      const r = await interrogerAgent({ data: { question: q } });
+      if (r.ok) setReponse(r.texte);
+      else setErreur(r.message);
+    } catch {
+      setErreur("Service temporairement indisponible");
     } finally {
-      clearTimeout(minuteur);
       setChargement(false);
     }
   };
@@ -141,6 +110,25 @@ export function AssistantIT() {
           </p>
           <div className="mt-2 whitespace-pre-wrap text-sm text-foreground">
             {rendreGras(reponse)}
+          </div>
+          <div className="mt-3 flex items-center gap-3">
+            <button
+              type="button"
+              disabled={ticketCree !== null}
+              onClick={() => {
+                const t = creerTicket({
+                  equipementId,
+                  titre: question.trim().slice(0, 80),
+                  description: reponse,
+                  priorite: "Normale",
+                });
+                setTicketCree(t.id);
+              }}
+              className="rounded-lg border border-primary px-3 py-1.5 text-sm font-semibold text-primary disabled:opacity-60"
+            >
+              Créer un ticket
+            </button>
+            {ticketCree && <span className="text-xs text-muted-foreground">Ticket {ticketCree} créé (voir « Tickets »).</span>}
           </div>
         </div>
       )}
