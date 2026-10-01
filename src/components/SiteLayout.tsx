@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useState, type ReactNode } from "react";
 import { Menu, X } from "lucide-react";
+import { Logo, LogoMark } from "@/components/Logo";
 
 const navItems = [
   { to: "/", label: "Accueil" },
@@ -18,11 +19,8 @@ export function SiteLayout({ children }: { children: ReactNode }) {
     <div className="flex min-h-screen flex-col bg-background">
       <header className="fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-[#0a2540]/95 text-white backdrop-blur">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 md:px-6">
-          <Link to="/" className="flex items-center gap-2" onClick={() => setOpen(false)}>
-            <span className="text-2xl" aria-hidden>
-              🛠️
-            </span>
-            <span className="text-lg font-bold tracking-tight text-white">ParcIT</span>
+          <Link to="/" onClick={() => setOpen(false)} aria-label="ParcIT — accueil">
+            <Logo />
           </Link>
 
           <nav className="hidden items-center gap-1 md:flex">
@@ -85,7 +83,9 @@ export function SiteLayout({ children }: { children: ReactNode }) {
       <footer className="bg-navy text-white/75">
         <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-10 text-sm text-muted-foreground md:flex-row md:items-center md:justify-between md:px-6">
           <div>
-            <p className="font-semibold text-white">🛠️ ParcIT — Plan International Sénégal</p>
+            <p className="flex items-center gap-2 font-semibold text-white">
+              <LogoMark className="h-6 w-6" /> ParcIT — Plan International Sénégal
+            </p>
             <p className="mt-1">Mentions légales · Usage interne · © {new Date().getFullYear()} ParcIT</p>
           </div>
           <div className="md:text-right">

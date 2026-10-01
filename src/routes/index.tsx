@@ -1,7 +1,19 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Monitor, ShieldCheck, Clock, Users, Radio } from "lucide-react";
+import {
+  Activity,
+  Bell,
+  Bot,
+  FileText,
+  LayoutDashboard,
+  Monitor,
+  QrCode,
+  Radio,
+  Ticket,
+} from "lucide-react";
+import { AssistantIT } from "@/components/AssistantIT";
 import { SiteLayout } from "@/components/SiteLayout";
-import { compter, useEquipements } from "@/lib/parc-store";
+import { useEquipements } from "@/lib/parc-store";
+import { indicateurs } from "@/lib/parc-metrics";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -25,38 +37,70 @@ export const Route = createFileRoute("/")({
   component: Accueil,
 });
 
-const stats = [
+const fonctionnalites = [
   {
-    icon: Users,
-    value: "150+",
-    label: "utilisateurs équipés sur les sites de Dakar et des régions",
+    icon: LayoutDashboard,
+    titre: "Tableau de bord",
+    texte: "Santé du parc, répartition des statuts et alertes en un coup d'œil.",
+    to: "/tableau-de-bord",
   },
-  { icon: Clock, value: "48 h", label: "de délai moyen de remise en service" },
   {
-    icon: ShieldCheck,
-    value: "100 %",
-    label: "des équipements avec numéro de série et date de maintenance tracés",
+    icon: QrCode,
+    titre: "QR code par équipement",
+    texte: "Scannez l'étiquette pour ouvrir la fiche et signaler une panne.",
+    to: "/tableau-de-bord",
   },
-];
+  {
+    icon: Bot,
+    titre: "Agent IA",
+    texte: "Posez vos questions en français : état, priorité, règle de maintenance.",
+    hash: "assistant",
+  },
+  {
+    icon: Ticket,
+    titre: "Tickets",
+    texte: "Suivi des interventions du signalement à la résolution (bientôt).",
+    to: "/contact",
+  },
+  {
+    icon: Bell,
+    titre: "Alertes de maintenance",
+    texte: "Les équipements en retard de plus de 180 jours sont signalés.",
+    to: "/tableau-de-bord",
+  },
+  {
+    icon: FileText,
+    titre: "Rapport hebdomadaire",
+    texte: "Exportez un rapport imprimable avec les pannes et les retards.",
+    to: "/tableau-de-bord",
+  },
+] as const;
 
 function Accueil() {
-  const c = compter(useEquipements());
-  const live = [
-    { label: "En service", value: c.service, cls: "text-success", dot: "bg-success" },
-    { label: "En panne", value: c.panne, cls: "text-destructive", dot: "bg-destructive" },
-    { label: "En maintenance", value: c.maintenance, cls: "text-warning", dot: "bg-warning" },
+  const ind = indicateurs(useEquipements());
+  const kpis = [
+    { label: "Équipements suivis", value: ind.total, cls: "text-navy", dot: "bg-primary" },
+    { label: "En panne", value: ind.panne, cls: "text-destructive", dot: "bg-destructive" },
+    { label: "En maintenance", value: ind.maintenance, cls: "text-warning", dot: "bg-warning" },
+    {
+      label: "En retard (plus de 180 jours)",
+      value: ind.retard,
+      cls: "text-warning",
+      dot: "bg-accent",
+    },
   ];
+
   return (
     <SiteLayout>
       <section className="bg-gradient-hero px-4 py-16 text-primary-foreground md:px-6 md:py-24">
         <div className="mx-auto max-w-4xl text-center">
-          <span className="inline-flex items-center gap-2 rounded-full bg-primary-foreground/15 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest">
+          <span className="inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest">
             <Monitor className="size-4" /> Plan International Sénégal · Service IT
           </span>
-          <h1 className="mt-6 text-3xl font-bold leading-tight tracking-tight md:text-5xl">
+          <h1 className="mt-6 text-3xl font-extrabold leading-tight tracking-tight md:text-5xl">
             Votre parc informatique, sous contrôle en un clic
           </h1>
-          <p className="mx-auto mt-5 max-w-2xl text-base text-primary-foreground/85 md:text-lg">
+          <p className="mx-auto mt-5 max-w-2xl text-base text-white/85 md:text-lg">
             Consultez en temps réel l'état de vos équipements informatiques, du siège de Dakar au
             bureau de Kaolack
           </p>
@@ -71,25 +115,31 @@ function Accueil() {
             <Link
               to="/suivi"
               search={{ vue: "technicien" }}
-              className="inline-flex items-center justify-center rounded-lg border border-primary-foreground/40 px-6 py-3 text-sm font-semibold transition-colors hover:bg-primary-foreground/10"
+              className="inline-flex items-center justify-center rounded-lg border border-white/40 px-6 py-3 text-sm font-semibold transition-colors hover:bg-white/10"
             >
               Je suis technicien IT
+            </Link>
+            <Link
+              to="/tableau-de-bord"
+              className="inline-flex items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-semibold text-white/90 underline-offset-4 hover:underline"
+            >
+              <Activity className="size-4" /> Ouvrir le tableau de bord
             </Link>
           </div>
         </div>
       </section>
 
-      <section className="px-4 pt-10 md:px-6">
+      <section className="-mt-8 px-4 md:px-6">
         <div className="mx-auto max-w-6xl rounded-2xl border border-border bg-card p-5 shadow-card">
           <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-primary">
             <Radio className="size-4 animate-pulse text-success" /> En direct
           </p>
-          <div className="mt-4 grid grid-cols-3 gap-3 text-center">
-            {live.map((l) => (
-              <div key={l.label} className="rounded-xl bg-secondary/50 p-4">
-                <p className={"text-3xl font-bold " + l.cls}>{l.value}</p>
+          <div className="mt-4 grid grid-cols-2 gap-3 text-center md:grid-cols-4">
+            {kpis.map((k) => (
+              <div key={k.label} className="rounded-xl bg-muted p-4">
+                <p className={"text-3xl font-bold " + k.cls}>{k.value}</p>
                 <p className="mt-1 flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
-                  <span className={"size-2 rounded-full " + l.dot} /> {l.label}
+                  <span className={"size-2 rounded-full " + k.dot} /> {k.label}
                 </p>
               </div>
             ))}
@@ -98,20 +148,41 @@ function Accueil() {
       </section>
 
       <section className="px-4 py-14 md:px-6 md:py-20">
-        <div className="mx-auto grid max-w-6xl gap-5 md:grid-cols-3">
-          {stats.map((s) => (
-            <div
-              key={s.value}
-              className="rounded-2xl border border-border bg-card p-7 text-center shadow-card"
-            >
-              <s.icon className="mx-auto size-7 text-accent" />
-              <p className="mt-4 text-4xl font-bold text-primary">{s.value}</p>
-              <p className="mt-2 text-sm text-muted-foreground">{s.label}</p>
-            </div>
-          ))}
+        <div className="mx-auto max-w-6xl">
+          <h2 className="text-center text-2xl font-bold tracking-tight text-navy md:text-3xl">
+            Tout ce qu'il faut pour piloter votre parc
+          </h2>
+          <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {fonctionnalites.map((f) => {
+              const contenu = (
+                <>
+                  <span className="inline-flex size-11 items-center justify-center rounded-xl bg-secondary text-primary">
+                    <f.icon className="size-5" />
+                  </span>
+                  <h3 className="mt-4 text-base font-semibold text-navy">{f.titre}</h3>
+                  <p className="mt-1.5 text-sm text-muted-foreground">{f.texte}</p>
+                  <p className="mt-4 text-sm font-semibold text-primary">En savoir plus →</p>
+                </>
+              );
+              const cls =
+                "block rounded-2xl border border-border bg-card p-6 shadow-card transition-all hover:-translate-y-1 hover:shadow-elegant";
+              return "hash" in f ? (
+                <Link key={f.titre} to="/" hash={f.hash} className={cls}>
+                  {contenu}
+                </Link>
+              ) : (
+                <Link key={f.titre} to={f.to} className={cls}>
+                  {contenu}
+                </Link>
+              );
+            })}
+          </div>
+
+          <div id="assistant" className="scroll-mt-24">
+            <AssistantIT />
+          </div>
         </div>
       </section>
-
     </SiteLayout>
   );
 }
