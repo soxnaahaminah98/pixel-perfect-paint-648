@@ -31,7 +31,11 @@ function Tests() {
   };
 
   const toutLancer = async () => {
-    for (const t of TESTS_AGENT) await lancer(t);
+    // Pause entre les tests : le plan gratuit de Dify limite les appels à la base de connaissances.
+    for (const t of TESTS_AGENT) {
+      await lancer(t);
+      await new Promise((r) => setTimeout(r, 15000));
+    }
   };
 
   const valider = (id: string, humain: "OK" | "KO") => {
