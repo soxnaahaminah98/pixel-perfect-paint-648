@@ -12,6 +12,10 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as SuiviRouteImport } from './routes/suivi'
+import { Route as TableauDeBordRouteImport } from './routes/tableau-de-bord'
+import { Route as TestsRouteImport } from './routes/tests'
+import { Route as TicketsRouteImport } from './routes/tickets'
+import { Route as EquipementIdRouteImport } from './routes/equipement.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -28,35 +32,93 @@ const SuiviRoute = SuiviRouteImport.update({
   path: '/suivi',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TableauDeBordRoute = TableauDeBordRouteImport.update({
+  id: '/tableau-de-bord',
+  path: '/tableau-de-bord',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TestsRoute = TestsRouteImport.update({
+  id: '/tests',
+  path: '/tests',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TicketsRoute = TicketsRouteImport.update({
+  id: '/tickets',
+  path: '/tickets',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EquipementIdRoute = EquipementIdRouteImport.update({
+  id: '/equipement/$id',
+  path: '/equipement/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/contact': typeof ContactRoute
   '/suivi': typeof SuiviRoute
+  '/tableau-de-bord': typeof TableauDeBordRoute
+  '/tests': typeof TestsRoute
+  '/tickets': typeof TicketsRoute
+  '/equipement/$id': typeof EquipementIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/contact': typeof ContactRoute
   '/suivi': typeof SuiviRoute
+  '/tableau-de-bord': typeof TableauDeBordRoute
+  '/tests': typeof TestsRoute
+  '/tickets': typeof TicketsRoute
+  '/equipement/$id': typeof EquipementIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/contact': typeof ContactRoute
   '/suivi': typeof SuiviRoute
+  '/tableau-de-bord': typeof TableauDeBordRoute
+  '/tests': typeof TestsRoute
+  '/tickets': typeof TicketsRoute
+  '/equipement/$id': typeof EquipementIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/contact' | '/suivi'
+  fullPaths:
+    | '/'
+    | '/contact'
+    | '/suivi'
+    | '/tableau-de-bord'
+    | '/tests'
+    | '/tickets'
+    | '/equipement/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/contact' | '/suivi'
-  id: '__root__' | '/' | '/contact' | '/suivi'
+  to:
+    | '/'
+    | '/contact'
+    | '/suivi'
+    | '/tableau-de-bord'
+    | '/tests'
+    | '/tickets'
+    | '/equipement/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/contact'
+    | '/suivi'
+    | '/tableau-de-bord'
+    | '/tests'
+    | '/tickets'
+    | '/equipement/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ContactRoute: typeof ContactRoute
   SuiviRoute: typeof SuiviRoute
+  TableauDeBordRoute: typeof TableauDeBordRoute
+  TestsRoute: typeof TestsRoute
+  TicketsRoute: typeof TicketsRoute
+  EquipementIdRoute: typeof EquipementIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -82,6 +144,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SuiviRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/tableau-de-bord': {
+      id: '/tableau-de-bord'
+      path: '/tableau-de-bord'
+      fullPath: '/tableau-de-bord'
+      preLoaderRoute: typeof TableauDeBordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tests': {
+      id: '/tests'
+      path: '/tests'
+      fullPath: '/tests'
+      preLoaderRoute: typeof TestsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tickets': {
+      id: '/tickets'
+      path: '/tickets'
+      fullPath: '/tickets'
+      preLoaderRoute: typeof TicketsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/equipement/$id': {
+      id: '/equipement/$id'
+      path: '/equipement/$id'
+      fullPath: '/equipement/$id'
+      preLoaderRoute: typeof EquipementIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -89,6 +179,10 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ContactRoute: ContactRoute,
   SuiviRoute: SuiviRoute,
+  TableauDeBordRoute: TableauDeBordRoute,
+  TestsRoute: TestsRoute,
+  TicketsRoute: TicketsRoute,
+  EquipementIdRoute: EquipementIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
