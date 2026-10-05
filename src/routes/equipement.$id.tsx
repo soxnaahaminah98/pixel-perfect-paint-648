@@ -6,8 +6,10 @@ import { SiteLayout } from "@/components/SiteLayout";
 import { StatutBadge } from "@/components/StatutBadge";
 import { AlerteBadge, PrioriteBadge } from "@/components/Badges";
 import { QrDialog } from "@/components/QrDialog";
+import { BandeauEquipement } from "@/components/EquipementVisuel";
 import { nomComplet, trouverUtilisateur } from "@/data/equipements";
 import { mettreAJour, useEquipements } from "@/lib/parc-store";
+import { creerTicket } from "@/lib/tickets-store";
 import { alerteMaintenance, joursDepuisMaintenance, priorite } from "@/lib/parc-metrics";
 
 export const Route = createFileRoute("/equipement/$id")({
@@ -62,7 +64,8 @@ function FicheEquipement() {
           </Link>
 
           <article className="mt-4 rounded-2xl border border-border bg-card p-6 shadow-card">
-            <div className="flex flex-wrap items-start justify-between gap-3">
+            <BandeauEquipement type={e.type} modele={e.modele} />
+            <div className="mt-5 flex flex-wrap items-start justify-between gap-3">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wider text-accent">
                   {e.id} · {e.type}
@@ -126,6 +129,12 @@ function FicheEquipement() {
               ev.preventDefault();
               if (!description.trim()) return;
               mettreAJour(e.id, "En panne", `[${urgence}] ${description.trim().slice(0, 250)}`);
+              creerTicket({
+                equipementId: e.id,
+                titre: `Panne : ${e.modele}`,
+                description: description.trim(),
+                priorite: "Haute", // une panne passe toujours en priorité Haute
+              });
               setDescription("");
               setEnvoye(true);
             }}
@@ -181,6 +190,7 @@ function FicheEquipement() {
 
           {agent && (
             <AssistantIT
+              equipementId={e.id}
               questionInitiale={`Quel est l'état de ${e.modele} (${e.id}) et que faire ?`}
             />
           )}

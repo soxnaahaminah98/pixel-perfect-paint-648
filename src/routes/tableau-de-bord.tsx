@@ -6,6 +6,7 @@ import { SiteLayout } from "@/components/SiteLayout";
 import { StatutBadge } from "@/components/StatutBadge";
 import { AlerteBadge, PrioriteBadge } from "@/components/Badges";
 import { QrDialog } from "@/components/QrDialog";
+import { VignetteEquipement } from "@/components/EquipementVisuel";
 import { nomComplet, trouverUtilisateur, type Statut } from "@/data/equipements";
 import { useEquipements, type EquipementLive } from "@/lib/parc-store";
 import {
@@ -265,8 +266,13 @@ function TableauDeBord() {
                         </Link>
                       </td>
                       <td className="py-3 pr-3">
-                        <p className="font-medium text-navy">{e.modele}</p>
-                        <p className="text-xs text-muted-foreground">{e.type}</p>
+                        <div className="flex items-center gap-3">
+                          <VignetteEquipement type={e.type} />
+                          <div>
+                            <p className="font-medium text-navy">{e.modele}</p>
+                            <p className="text-xs text-muted-foreground">{e.type}</p>
+                          </div>
+                        </div>
                       </td>
                       <td className="py-3 pr-3 text-muted-foreground">
                         {e.site}

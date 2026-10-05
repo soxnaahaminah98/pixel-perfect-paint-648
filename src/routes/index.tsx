@@ -12,6 +12,9 @@ import {
 } from "lucide-react";
 import { AssistantIT } from "@/components/AssistantIT";
 import { SiteLayout } from "@/components/SiteLayout";
+import { BandeauEquipement, marqueDe } from "@/components/EquipementVisuel";
+import { IllustrationParc } from "@/components/IllustrationParc";
+import type { TypeEquipement } from "@/data/equipements";
 import { useEquipements } from "@/lib/parc-store";
 import { indicateurs } from "@/lib/parc-metrics";
 
@@ -36,6 +39,8 @@ export const Route = createFileRoute("/")({
   }),
   component: Accueil,
 });
+
+const TYPES: TypeEquipement[] = ["Laptop", "PC Fixe", "Imprimante", "Smartphone"];
 
 const fonctionnalites = [
   {
@@ -77,7 +82,16 @@ const fonctionnalites = [
 ] as const;
 
 function Accueil() {
-  const ind = indicateurs(useEquipements());
+  const equipements = useEquipements();
+  const ind = indicateurs(equipements);
+  const familles = TYPES.map((type) => {
+    const liste = equipements.filter((e) => e.type === type);
+    return {
+      type,
+      nombre: liste.length,
+      marques: [...new Set(liste.map((e) => marqueDe(e.modele)))],
+    };
+  }).filter((f) => f.nombre > 0);
   const kpis = [
     { label: "Équipements suivis", value: ind.total, cls: "text-navy", dot: "bg-primary" },
     { label: "En panne", value: ind.panne, cls: "text-destructive", dot: "bg-destructive" },
@@ -126,6 +140,7 @@ function Accueil() {
               <Activity className="size-4" /> Ouvrir le tableau de bord
             </Link>
           </div>
+          <IllustrationParc className="mx-auto mt-10 w-full max-w-lg drop-shadow-xl" />
         </div>
       </section>
 
@@ -141,6 +156,41 @@ function Accueil() {
                 <p className="mt-1 flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
                   <span className={"size-2 rounded-full " + k.dot} /> {k.label}
                 </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="px-4 pt-14 md:px-6 md:pt-20">
+        <div className="mx-auto max-w-6xl">
+          <h2 className="text-center text-2xl font-bold tracking-tight text-navy md:text-3xl">
+            Votre parc en images
+          </h2>
+          <p className="mx-auto mt-2 max-w-xl text-center text-sm text-muted-foreground">
+            Ordinateurs portables, postes fixes, imprimantes et smartphones, avec leurs marques.
+          </p>
+          <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-4">
+            {familles.map((f) => (
+              <div
+                key={f.type}
+                className="rounded-2xl border border-border bg-card p-5 text-center shadow-card"
+              >
+                <BandeauEquipement type={f.type} compact />
+                <p className="mt-3 text-3xl font-bold text-navy">{f.nombre}</p>
+                <p className="text-xs text-muted-foreground">
+                  {f.nombre > 1 ? "équipements" : "équipement"}
+                </p>
+                <div className="mt-3 flex flex-wrap justify-center gap-1.5">
+                  {f.marques.map((m) => (
+                    <span
+                      key={m}
+                      className="rounded-full bg-secondary px-2.5 py-0.5 text-xs font-semibold text-primary"
+                    >
+                      {m}
+                    </span>
+                  ))}
+                </div>
               </div>
             ))}
           </div>
