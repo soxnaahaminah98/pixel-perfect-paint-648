@@ -15,6 +15,7 @@ import { Route as SuiviRouteImport } from './routes/suivi'
 import { Route as TableauDeBordRouteImport } from './routes/tableau-de-bord'
 import { Route as TestsRouteImport } from './routes/tests'
 import { Route as TicketsRouteImport } from './routes/tickets'
+import { Route as VideoRouteImport } from './routes/video'
 import { Route as EquipementIdRouteImport } from './routes/equipement.$id'
 
 const IndexRoute = IndexRouteImport.update({
@@ -47,6 +48,11 @@ const TicketsRoute = TicketsRouteImport.update({
   path: '/tickets',
   getParentRoute: () => rootRouteImport,
 } as any)
+const VideoRoute = VideoRouteImport.update({
+  id: '/video',
+  path: '/video',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EquipementIdRoute = EquipementIdRouteImport.update({
   id: '/equipement/$id',
   path: '/equipement/$id',
@@ -60,6 +66,7 @@ export interface FileRoutesByFullPath {
   '/tableau-de-bord': typeof TableauDeBordRoute
   '/tests': typeof TestsRoute
   '/tickets': typeof TicketsRoute
+  '/video': typeof VideoRoute
   '/equipement/$id': typeof EquipementIdRoute
 }
 export interface FileRoutesByTo {
@@ -69,6 +76,7 @@ export interface FileRoutesByTo {
   '/tableau-de-bord': typeof TableauDeBordRoute
   '/tests': typeof TestsRoute
   '/tickets': typeof TicketsRoute
+  '/video': typeof VideoRoute
   '/equipement/$id': typeof EquipementIdRoute
 }
 export interface FileRoutesById {
@@ -79,6 +87,7 @@ export interface FileRoutesById {
   '/tableau-de-bord': typeof TableauDeBordRoute
   '/tests': typeof TestsRoute
   '/tickets': typeof TicketsRoute
+  '/video': typeof VideoRoute
   '/equipement/$id': typeof EquipementIdRoute
 }
 export interface FileRouteTypes {
@@ -90,6 +99,7 @@ export interface FileRouteTypes {
     | '/tableau-de-bord'
     | '/tests'
     | '/tickets'
+    | '/video'
     | '/equipement/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -99,6 +109,7 @@ export interface FileRouteTypes {
     | '/tableau-de-bord'
     | '/tests'
     | '/tickets'
+    | '/video'
     | '/equipement/$id'
   id:
     | '__root__'
@@ -108,6 +119,7 @@ export interface FileRouteTypes {
     | '/tableau-de-bord'
     | '/tests'
     | '/tickets'
+    | '/video'
     | '/equipement/$id'
   fileRoutesById: FileRoutesById
 }
@@ -118,6 +130,7 @@ export interface RootRouteChildren {
   TableauDeBordRoute: typeof TableauDeBordRoute
   TestsRoute: typeof TestsRoute
   TicketsRoute: typeof TicketsRoute
+  VideoRoute: typeof VideoRoute
   EquipementIdRoute: typeof EquipementIdRoute
 }
 
@@ -165,6 +178,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TicketsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/video': {
+      id: '/video'
+      path: '/video'
+      fullPath: '/video'
+      preLoaderRoute: typeof VideoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/equipement/$id': {
       id: '/equipement/$id'
       path: '/equipement/$id'
@@ -182,6 +202,7 @@ const rootRouteChildren: RootRouteChildren = {
   TableauDeBordRoute: TableauDeBordRoute,
   TestsRoute: TestsRoute,
   TicketsRoute: TicketsRoute,
+  VideoRoute: VideoRoute,
   EquipementIdRoute: EquipementIdRoute,
 }
 export const routeTree = rootRouteImport

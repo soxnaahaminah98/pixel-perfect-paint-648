@@ -7,6 +7,7 @@ import {
   LayoutDashboard,
   Mail,
   Menu,
+  Play,
   Server,
   Ticket,
   X,
@@ -18,6 +19,7 @@ const navItems = [
   { to: "/suivi", label: "Équipements", icon: Server },
   { to: "/tickets", label: "Tickets", icon: Ticket },
   { to: "/tests", label: "Tests de l'agent", icon: FlaskConical },
+  { to: "/video", label: "Vidéo", icon: Play },
   { to: "/contact", label: "Contact", icon: Mail },
 ] as const;
 

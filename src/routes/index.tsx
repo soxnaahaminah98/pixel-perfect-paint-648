@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Activity, ArrowRight, Bot, QrCode, Ticket } from "lucide-react";
+import { Activity, ArrowRight, Bot, Play, QrCode, Ticket } from "lucide-react";
 import { AssistantIT } from "@/components/AssistantIT";
 import { SiteLayout } from "@/components/SiteLayout";
 import { IconeType, marqueDe } from "@/components/EquipementVisuel";
@@ -64,6 +64,12 @@ function Accueil() {
               État, affectation et maintenance de chaque équipement, du siège de Dakar au bureau de
               Kaolack.
             </p>
+            <Link
+              to="/video"
+              className="mt-2 inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"
+            >
+              <Play className="size-4" aria-hidden="true" /> Voir la vidéo de présentation
+            </Link>
           </div>
           <div className="flex flex-wrap gap-2">
             <Link
