@@ -36,3 +36,5 @@ dist-ssr
 # Vidéo originale (non compressée)
 /1006.*
 /*.zip
+
+/Video ParcIT.*
