@@ -1,22 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import {
-  Activity,
-  Bell,
-  Bot,
-  FileText,
-  LayoutDashboard,
-  Monitor,
-  QrCode,
-  Radio,
-  Ticket,
-} from "lucide-react";
+import { Activity, ArrowRight, Bot, QrCode, Ticket } from "lucide-react";
 import { AssistantIT } from "@/components/AssistantIT";
 import { SiteLayout } from "@/components/SiteLayout";
-import { BandeauEquipement, marqueDe } from "@/components/EquipementVisuel";
-import { IllustrationParc } from "@/components/IllustrationParc";
-import type { TypeEquipement } from "@/data/equipements";
+import { IconeType, marqueDe } from "@/components/EquipementVisuel";
+import type { Statut } from "@/data/equipements";
 import { useEquipements } from "@/lib/parc-store";
-import { indicateurs } from "@/lib/parc-metrics";
+import { indicateurs, joursDepuisMaintenance, SEUIL_RETARD_JOURS } from "@/lib/parc-metrics";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -40,199 +29,136 @@ export const Route = createFileRoute("/")({
   component: Accueil,
 });
 
-const TYPES: TypeEquipement[] = ["Laptop", "PC Fixe", "Imprimante", "Smartphone"];
+const LED: Record<Statut, { led: string; texte: string; pulse: boolean }> = {
+  "En service": { led: "bg-[#2fd47f] shadow-[0_0_8px_#2fd47f]", texte: "text-[#7ee8b0]", pulse: false },
+  "En maintenance": { led: "bg-[#f2b33d] shadow-[0_0_8px_#f2b33d]", texte: "text-[#f6cd7a]", pulse: true },
+  "En panne": { led: "bg-[#ff5a5a] shadow-[0_0_8px_#ff5a5a]", texte: "text-[#ff9a9a]", pulse: true },
+};
 
-const fonctionnalites = [
-  {
-    icon: LayoutDashboard,
-    titre: "Tableau de bord",
-    texte: "Santé du parc, répartition des statuts et alertes en un coup d'œil.",
-    to: "/tableau-de-bord",
-  },
-  {
-    icon: QrCode,
-    titre: "QR code par équipement",
-    texte: "Scannez l'étiquette pour ouvrir la fiche et signaler une panne.",
-    to: "/tableau-de-bord",
-  },
-  {
-    icon: Bot,
-    titre: "Agent IA",
-    texte: "Posez vos questions en français : état, priorité, règle de maintenance.",
-    hash: "assistant",
-  },
-  {
-    icon: Ticket,
-    titre: "Tickets",
-    texte: "Suivi des interventions du signalement à la résolution (bientôt).",
-    to: "/contact",
-  },
-  {
-    icon: Bell,
-    titre: "Alertes de maintenance",
-    texte: "Les équipements en retard de plus de 180 jours sont signalés.",
-    to: "/tableau-de-bord",
-  },
-  {
-    icon: FileText,
-    titre: "Rapport hebdomadaire",
-    texte: "Exportez un rapport imprimable avec les pannes et les retards.",
-    to: "/tableau-de-bord",
-  },
+const acces = [
+  { icon: Activity, titre: "Tableau de bord", texte: "Santé du parc, alertes et rapport imprimable.", to: "/tableau-de-bord" },
+  { icon: QrCode, titre: "Étiquettes QR", texte: "Scannez un équipement pour ouvrir sa fiche et signaler une panne.", to: "/suivi" },
+  { icon: Ticket, titre: "Tickets", texte: "Suivez chaque intervention, du signalement à la résolution.", to: "/tickets" },
 ] as const;
 
 function Accueil() {
   const equipements = useEquipements();
   const ind = indicateurs(equipements);
-  const familles = TYPES.map((type) => {
-    const liste = equipements.filter((e) => e.type === type);
-    return {
-      type,
-      nombre: liste.length,
-      marques: [...new Set(liste.map((e) => marqueDe(e.modele)))],
-    };
-  }).filter((f) => f.nombre > 0);
   const kpis = [
-    { label: "Équipements suivis", value: ind.total, cls: "text-navy", dot: "bg-primary" },
-    { label: "En panne", value: ind.panne, cls: "text-destructive", dot: "bg-destructive" },
-    { label: "En maintenance", value: ind.maintenance, cls: "text-warning", dot: "bg-warning" },
-    {
-      label: "En retard (plus de 180 jours)",
-      value: ind.retard,
-      cls: "text-warning",
-      dot: "bg-accent",
-    },
+    { label: "Équipements suivis", value: ind.total, bar: "border-primary" },
+    { label: "En panne", value: ind.panne, bar: "border-destructive" },
+    { label: "En maintenance", value: ind.maintenance, bar: "border-accent" },
+    { label: `Maintenance > ${SEUIL_RETARD_JOURS} jours`, value: ind.retard, bar: "border-warning" },
   ];
 
   return (
     <SiteLayout>
-      <section className="bg-gradient-hero px-4 py-16 text-primary-foreground md:px-6 md:py-24">
-        <div className="mx-auto max-w-4xl text-center">
-          <span className="inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest">
-            <Monitor className="size-4" /> Plan International Sénégal · Service IT
-          </span>
-          <h1 className="mt-6 text-3xl font-extrabold leading-tight tracking-tight md:text-5xl">
-            Votre parc informatique, sous contrôle en un clic
-          </h1>
-          <p className="mx-auto mt-5 max-w-2xl text-base text-white/85 md:text-lg">
-            Consultez en temps réel l'état de vos équipements informatiques, du siège de Dakar au
-            bureau de Kaolack
-          </p>
-          <div className="mt-9 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center">
+      <div className="mx-auto max-w-6xl px-4 py-8 md:px-8 md:py-10">
+        <header className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <div>
+            <p className="text-sm font-medium text-muted-foreground">
+              Plan International Sénégal · Service IT
+            </p>
+            <h1 className="mt-1 text-3xl font-bold tracking-tight md:text-4xl">Parc informatique</h1>
+            <p className="mt-2 max-w-xl text-muted-foreground">
+              État, affectation et maintenance de chaque équipement, du siège de Dakar au bureau de
+              Kaolack.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
             <Link
               to="/suivi"
               search={{ vue: "utilisateur" }}
-              className="inline-flex items-center justify-center rounded-lg bg-accent px-6 py-3 text-sm font-semibold text-accent-foreground shadow-elegant transition-transform hover:-translate-y-0.5"
+              className="inline-flex items-center rounded-md bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary-glow"
             >
               Je suis utilisateur
             </Link>
             <Link
               to="/suivi"
               search={{ vue: "technicien" }}
-              className="inline-flex items-center justify-center rounded-lg border border-white/40 px-6 py-3 text-sm font-semibold transition-colors hover:bg-white/10"
+              className="inline-flex items-center rounded-md border border-input bg-card px-4 py-2.5 text-sm font-semibold transition-colors hover:bg-muted"
             >
               Je suis technicien IT
             </Link>
-            <Link
-              to="/tableau-de-bord"
-              className="inline-flex items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-semibold text-white/90 underline-offset-4 hover:underline"
-            >
-              <Activity className="size-4" /> Ouvrir le tableau de bord
+          </div>
+        </header>
+
+        <section className="mt-8 grid grid-cols-2 gap-3 md:grid-cols-4" aria-label="Indicateurs">
+          {kpis.map((k) => (
+            <div key={k.label} className={"rounded-md border-l-4 bg-card px-4 py-3 shadow-card " + k.bar}>
+              <p className="font-mono-id text-3xl font-medium">{k.value}</p>
+              <p className="mt-0.5 text-xs text-muted-foreground">{k.label}</p>
+            </div>
+          ))}
+        </section>
+
+        <section className="mt-8" aria-label="Baie des équipements">
+          <div className="flex items-baseline justify-between">
+            <h2 className="text-lg font-semibold">Baie des équipements</h2>
+            <Link to="/suivi" className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline">
+              Tout voir <ArrowRight className="size-4" />
             </Link>
           </div>
-          <IllustrationParc className="mx-auto mt-10 w-full max-w-lg drop-shadow-xl" />
-        </div>
-      </section>
-
-      <section className="-mt-8 px-4 md:px-6">
-        <div className="mx-auto max-w-6xl rounded-2xl border border-border bg-card p-5 shadow-card">
-          <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-primary">
-            <Radio className="size-4 animate-pulse text-success" /> En direct
-          </p>
-          <div className="mt-4 grid grid-cols-2 gap-3 text-center md:grid-cols-4">
-            {kpis.map((k) => (
-              <div key={k.label} className="rounded-xl bg-muted p-4">
-                <p className={"text-3xl font-bold " + k.cls}>{k.value}</p>
-                <p className="mt-1 flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
-                  <span className={"size-2 rounded-full " + k.dot} /> {k.label}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="px-4 pt-14 md:px-6 md:pt-20">
-        <div className="mx-auto max-w-6xl">
-          <h2 className="text-center text-2xl font-bold tracking-tight text-navy md:text-3xl">
-            Votre parc en images
-          </h2>
-          <p className="mx-auto mt-2 max-w-xl text-center text-sm text-muted-foreground">
-            Ordinateurs portables, postes fixes, imprimantes et smartphones, avec leurs marques.
-          </p>
-          <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-4">
-            {familles.map((f) => (
-              <div
-                key={f.type}
-                className="rounded-2xl border border-border bg-card p-5 text-center shadow-card"
-              >
-                <BandeauEquipement type={f.type} compact />
-                <p className="mt-3 text-3xl font-bold text-navy">{f.nombre}</p>
-                <p className="text-xs text-muted-foreground">
-                  {f.nombre > 1 ? "équipements" : "équipement"}
-                </p>
-                <div className="mt-3 flex flex-wrap justify-center gap-1.5">
-                  {f.marques.map((m) => (
+          <ul className="mt-3 divide-y divide-white/10 overflow-hidden rounded-lg border-2 border-[#243249] bg-[#0e1a2b] text-white">
+            {equipements.map((e) => {
+              const l = LED[e.statut];
+              const j = joursDepuisMaintenance(e.maintenance);
+              return (
+                <li key={e.id}>
+                  <Link
+                    to="/equipement/$id"
+                    params={{ id: e.id }}
+                    className="flex flex-wrap items-center gap-x-3 gap-y-1 px-4 py-3 transition-colors hover:bg-white/6 md:grid md:grid-cols-[auto_4rem_2rem_1fr_8rem_8rem_9rem] md:gap-x-4"
+                  >
                     <span
-                      key={m}
-                      className="rounded-full bg-secondary px-2.5 py-0.5 text-xs font-semibold text-primary"
-                    >
-                      {m}
+                      className={"size-2.5 rounded-full " + l.led + (l.pulse ? " led-pulse" : "")}
+                      aria-hidden="true"
+                    />
+                    <span className="font-mono-id text-sm text-white/60 md:order-none">{e.id}</span>
+                    <span className="hidden text-white/70 md:block">
+                      <IconeType type={e.type} className="size-5" />
                     </span>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="px-4 py-14 md:px-6 md:py-20">
-        <div className="mx-auto max-w-6xl">
-          <h2 className="text-center text-2xl font-bold tracking-tight text-navy md:text-3xl">
-            Tout ce qu'il faut pour piloter votre parc
-          </h2>
-          <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {fonctionnalites.map((f) => {
-              const contenu = (
-                <>
-                  <span className="inline-flex size-11 items-center justify-center rounded-xl bg-secondary text-primary">
-                    <f.icon className="size-5" />
-                  </span>
-                  <h3 className="mt-4 text-base font-semibold text-navy">{f.titre}</h3>
-                  <p className="mt-1.5 text-sm text-muted-foreground">{f.texte}</p>
-                  <p className="mt-4 text-sm font-semibold text-primary">En savoir plus →</p>
-                </>
-              );
-              const cls =
-                "block rounded-2xl border border-border bg-card p-6 shadow-card transition-all hover:-translate-y-1 hover:shadow-elegant";
-              return "hash" in f ? (
-                <Link key={f.titre} to="/" hash={f.hash} className={cls}>
-                  {contenu}
-                </Link>
-              ) : (
-                <Link key={f.titre} to={f.to} className={cls}>
-                  {contenu}
-                </Link>
+                    <span className="min-w-0 flex-1 truncate font-medium">
+                      {e.modele}
+                      <span className="ml-2 hidden text-xs font-normal text-white/45 sm:inline">
+                        {marqueDe(e.modele)} · {e.type}
+                      </span>
+                    </span>
+                    <span className={"w-full pl-[22px] text-sm font-medium md:w-auto md:pl-0 " + l.texte}>{e.statut}</span>
+                    <span className="hidden text-sm text-white/55 md:block">{e.site}</span>
+                    <span className="hidden font-mono-id text-xs text-white/45 md:block">
+                      {j === null ? "jamais" : `maint. il y a ${j} j`}
+                    </span>
+                  </Link>
+                </li>
               );
             })}
-          </div>
+          </ul>
+        </section>
 
-          <div id="assistant" className="scroll-mt-24">
-            <AssistantIT />
-          </div>
-        </div>
-      </section>
+        <section id="assistant" className="mt-10 scroll-mt-6" aria-label="Agent IA">
+          <h2 className="flex items-center gap-2 text-lg font-semibold">
+            <Bot className="size-5 text-primary" aria-hidden="true" /> Demander à l'agent
+          </h2>
+          <AssistantIT />
+        </section>
+
+        <section className="mt-10 grid gap-3 md:grid-cols-3" aria-label="Accès rapide">
+          {acces.map((a) => (
+            <Link
+              key={a.titre}
+              to={a.to}
+              className="group flex gap-3 rounded-md border border-border bg-card p-4 shadow-card transition-colors hover:border-primary"
+            >
+              <a.icon className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden="true" />
+              <span>
+                <span className="block font-semibold group-hover:text-primary">{a.titre}</span>
+                <span className="mt-0.5 block text-sm text-muted-foreground">{a.texte}</span>
+              </span>
+            </Link>
+          ))}
+        </section>
+      </div>
     </SiteLayout>
   );
 }

@@ -12,10 +12,10 @@ const ICONES: Record<TypeEquipement, LucideIcon> = {
 };
 
 const TEINTES: Record<TypeEquipement, string> = {
-  Laptop: "from-sky-500 to-blue-700",
-  "PC Fixe": "from-indigo-500 to-violet-700",
-  Imprimante: "from-emerald-500 to-teal-700",
-  Smartphone: "from-amber-500 to-orange-600",
+  Laptop: "from-slate-600 to-slate-800",
+  "PC Fixe": "from-slate-700 to-slate-900",
+  Imprimante: "from-teal-600 to-teal-800",
+  Smartphone: "from-amber-500 to-amber-700",
 };
 
 export function IconeType({ type, className = "size-5" }: { type: TypeEquipement; className?: string }) {
